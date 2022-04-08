@@ -1,0 +1,36 @@
+#Point to data dir
+cd ~/Documents/Research/HD/PB_sequence_data/Ant1/fasta/
+
+#Make backup of original files in backup folder
+Mkdir ../original_fasta
+Cp * ../original_fasta
+
+#Remove line spacing in all fasta files in directory
+for file in *.fasta; do awk '/^>/{print s? s"\n"$0:$0;s="";next}{s=s sprintf("%s",$0)}END{if(s)print s}' $file > "$(basename "$file" .fasta)_neat.fasta"; done
+
+#Remove ID junk in all files
+sed -i "" 's|m54082_210209_154357/||g' *_neat.fasta
+sed -i "" 's|/ccs||g' *_neat.fasta
+
+#Delete non-neat files
+find . -type f ! -name '*_neat.*' -delete
+
+#Generate permissive RD read-by-read files for all fasta files in directory
+#for i in *; do file="${i%.fasta}"; ~/Documents/Research/HD/Analysis/Analysis_packages/RD/RepeatDecoder-1.0.15eb445-Release-Darwin-x86_64_v2/bin/RepeatDecoder --prf ~/Documents/Research/HD/Analysis/Analysis_packages/RD/RepeatDecoder-1.0.15eb445-Release-Darwin-x86_64_v2/data/cag.prf $i -t 8 --with-revcomp --optimal -o TSV --source --output-name ${file} > "$(basename "$file" .fasta)_RD_p.txt"; done
+
+#Generate restrictive RD read-by-read files for all fasta files in directory
+#for i in *; do file="${i%.fasta}"; ~/Documents/Research/HD/Analysis/Analysis_packages/RD/RepeatDecoder-1.0.15eb445-Release-Darwin-x86_64_v2/bin/RepeatDecoder --prf ~/Documents/Research/HD/Analysis/Analysis_packages/RD/RepeatDecoder-1.0.15eb445-Release-Darwin-x86_64_v2/data/cag_restrictive.prf $i -t 8 --with-revcomp --optimal -o TSV --source --output-name ${file} > "$(basename "$file" .fasta)_RD_r.txt"; done
+
+#Delete extra files 
+Rm -r *RD_p.txt_*
+
+#Trim columns 1, 7,8
+for file in *.txt; do cut -f2-6 $file > "$(basename "$file" .txt)_trim.txt"; done
+
+#File sorting 
+rm -r *_RD_p.txt
+rm -r *_RD_r.txt
+Mkdir permissive
+Mkdir restrictive
+Mv *RD_p_trim.txt permissive
+Mv *RD_r_trim.txt restrictive
