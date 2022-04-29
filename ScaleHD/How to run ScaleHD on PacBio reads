@@ -1,0 +1,17 @@
+Prerequisites:
+Install ScaleHd on local server following https://cutadapt.readthedocs.io/en/stable/installation.html
+Extract index.zip and copy files to your scratch drive. Note the directory.
+
+ScaleHD takes .Fastq/.Fq format. It expects read 1 (R1) and read 2 (R2) format, 
+and will fail unless an balanced number of files that end in those formats. 
+If you don’t have R2 reads you could probably just cut and paste R1 again. 
+So for a 384 plate the program will expect 768 files in a directory, 
+half ending in R1 and half in R2. 
+Adjust based on the number of samples you want to have per run.
+
+Running PacBio reads on ScaleHD
+1. Trim Pacbio fastq reads with 'Trim_Pacbio_reads_fwfw.sh'
+2. Modify derectories to your own in the ScaleHD config file 'scaleHD_config_29JAN2020.xml'
+3. Modify 'Submission_script_PacBio_ScaleHD_v1.sh' to point to the config file and output directories
+4. Run ScaleHD with the script using the command:
+sbatch /[your script directory]/[your script]
